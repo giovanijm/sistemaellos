@@ -9,13 +9,16 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -25,17 +28,21 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('manager')
             ->login()
             ->colors([
                 'primary' => Color::hex('#3A6645'),
                 'danger' => Color::hex('#EE2F2A'),
                 'gray' => Color::hex('#3B4F68'),
             ])
+            ->font('Poppins')
             ->sidebarCollapsibleOnDesktop()
             ->collapsibleNavigationGroups(true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->renderHook(PanelsRenderHook::BODY_START,
+                fn(): View => view('filament.footer'),
+            )
             ->pages([
                 Pages\Dashboard::class,
             ])
