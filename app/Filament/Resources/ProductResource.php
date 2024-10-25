@@ -113,6 +113,7 @@ class ProductResource extends Resource
                 ]),
                 FileUpload::make('photo')
                     ->label('Imagem do Produto')
+                    ->disk('s3')
                     ->columnSpanFull()
                     ->image()
                     ->imageEditor()
@@ -125,6 +126,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('photo')
+                    ->disk('s3')
                     ->square()
                     ->label('Imagem'),
                 TextColumn::make('id')

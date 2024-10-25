@@ -28,7 +28,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#3A6645'),
+                'danger' => Color::hex('#EE2F2A'),
+                'gray' => Color::hex('#3B4F68'),
             ])
             ->sidebarCollapsibleOnDesktop()
             ->collapsibleNavigationGroups(true)
@@ -60,10 +62,12 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])
             ->brandName('Sistema Ellos')
-            ->brandLogo(asset('https://s3.siellos.online/files-ellos-filament/layout/logoSistemaEllos_color.png'))
-            ->brandLogoHeight('2rem')
-            ->maxContentWidth('full')
+            ->brandLogo(asset('https://s3.siellos.online/files-ellos-filament/layout/logoSistemaEllos_escuro.png'))
+            ->darkModeBrandLogo(asset('https://s3.siellos.online/files-ellos-filament/layout/logoSistemaEllos_claro.png'))
+            ->brandLogoHeight(fn() => auth()->check() ? '2.7rem' : '4rem')
+            ->favicon(asset('https://s3.siellos.online/files-ellos-filament/layout/favicon.png'));
+            //->maxContentWidth('full')
             //->profile()
-            ->passwordReset();
+            //->passwordReset();
     }
 }

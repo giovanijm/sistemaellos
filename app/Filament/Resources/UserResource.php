@@ -19,11 +19,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-
     protected static ?string $navigationIcon = 'heroicon-c-user';
     protected static ?string $navigationGroup = 'Configurações de Acesso';
     protected static ?int $navigationSort = 91;
@@ -92,10 +92,10 @@ class UserResource extends Resource
                         FileUpload::make('photo')
                             ->disk('s3')
                             ->label('')
-                            ->directory('users'),
+                            ->directory('users')
+                            ->avatar()
+                            ->imageEditor(),
                             //->image()
-                            //->avatar()
-                            //->imageEditor()
                             //->circleCropper(),
                     ]),
             ]);
@@ -114,6 +114,7 @@ class UserResource extends Resource
                     ->searchable(),
                 ImageColumn::make('photo')
                     ->disk('s3')
+                    ->defaultImageUrl(fn(Model $record) => $record->getFilamentAvatarUrl())
                     ->circular()
                     ->label('Foto'),
                 TextColumn::make('email')
