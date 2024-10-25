@@ -64,8 +64,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Sistema Ellos')
             ->brandLogo(asset('https://s3.siellos.online/files-ellos-filament/layout/logoSistemaEllos_color.png'))
             ->brandLogoHeight('2rem')
-            ->maxContentWidth('full');
+            ->maxContentWidth('full')
             //->profile()
-            //->passwordReset();
+            ->passwordReset();
     }
 }

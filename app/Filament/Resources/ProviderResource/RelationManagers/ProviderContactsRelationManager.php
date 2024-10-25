@@ -70,7 +70,8 @@ class ProviderContactsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->icon('eos-contact-page'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

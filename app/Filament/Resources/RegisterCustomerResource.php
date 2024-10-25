@@ -8,8 +8,9 @@ use App\Filament\Resources\RegisterCustomerResource\Widgets\RegisterCustomerOver
 use App\Models\Customer;
 use App\Models\RegisterCustomer;
 use App\Models\Service;
-use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -25,10 +26,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Carbon\Carbon;
+use Filament\Forms\Components\Actions\Action as ActionsAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Set;
+use Filament\Support\Enums\VerticalAlignment;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
 
@@ -79,6 +83,7 @@ class RegisterCustomerResource extends Resource
                     Select::make('customer_id')
                         ->label(__('Nome do cliente'))
                         ->relationship('customer', 'fullName')
+                        ->preload()
                         ->required()
                         ->markAsRequired()
                         ->searchable()
@@ -87,6 +92,7 @@ class RegisterCustomerResource extends Resource
                         ->label(__('Nome do Instrutor'))
                         ->relationship('provider', 'fullName')
                         ->required()
+                        ->preload()
                         ->markAsRequired()
                         ->searchable()
                         ->columnSpan(2),
@@ -225,7 +231,8 @@ class RegisterCustomerResource extends Resource
                         ->required()
                         ->markAsRequired()
                         ->columnSpan(1)
-                        ->disabled(true)
+                        //->disabled(true)
+                        ->readOnly(true)
                         ->live()
                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                             dd($state);
@@ -260,13 +267,15 @@ class RegisterCustomerResource extends Resource
                         ->required()
                         ->markAsRequired()
                         ->columnSpan(1)
-                        ->disabled(true),
+                        //->disabled(true),
+                        ->readOnly(true),
                     Money::make('amount_to_pay')
                         ->label('Valor Pago')
                         ->required()
                         ->markAsRequired()
                         ->columnSpan(1)
-                        ->disabled(true),
+                        //->disabled(true)
+                        ->readOnly(true),
                     TextInput::make('split_pay')
                         ->label(__('Parcelado em:'))
                         ->prefix('X')
@@ -291,13 +300,23 @@ class RegisterCustomerResource extends Resource
                         ->required()
                         ->markAsRequired()
                         ->columnSpan(1)
-                        ->disabled(true),
+                        //->disabled(true)
+                        ->readOnly(true),
                     Select::make('payment_method_id')
                         ->label(__('Forma de Pagamento'))
                         ->relationship('payment_method', 'name')
                         ->required()
                         ->markAsRequired()
                         ->columnSpan(1),
+                    // Actions::make([
+                    //     Action::make('star')
+                    //         ->icon('heroicon-m-star')
+                    //         ->requiresConfirmation(),
+                    //     Action::make('resetStars')
+                    //         ->icon('heroicon-m-x-mark')
+                    //         ->color('danger')
+                    //         ->requiresConfirmation(),
+                    //     ])->fullWidth()->verticalAlignment(VerticalAlignment::End),
                 ]),
             Section::make(__('customer.section.title.extraData'))
                 ->description(__('customer.section.description.extraData'))
@@ -332,7 +351,7 @@ class RegisterCustomerResource extends Resource
                 TextColumn::make('customer.socialName')
                     ->label(__('register_customer.column.customer'))
                     ->description(fn ($record): string => $record->customer->fullName)
-                    ->url(fn ($record): string => route('filament.admin.resources.customers.edit', ['record' => $record->customer]))
+                    ->url(fn ($record): string => route('filament.admin.resources.customers.view', ['record' => $record->customer]))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('service.name')

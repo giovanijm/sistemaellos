@@ -6,10 +6,13 @@ use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers\ContactsRelationManager;
 use App\Filament\Resources\CustomerResource\Widgets\CustomersStatsOverview;
 use App\Models\{Customer,Status,TypeDocument,TypeGender};
+use Closure;
+use DateTime;
 use Filament\Forms;
 use Filament\Forms\Components\{DatePicker, DateTimePicker, RichEditor, Section, Select, TextInput};
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -17,7 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Leandrocfe\FilamentPtbrFormFields\Cep;
+use Leandrocfe\FilamentPtbrFormFields\{ Cep, Document};
 
 class CustomerResource extends Resource
 {
@@ -63,9 +66,9 @@ class CustomerResource extends Resource
                             ->required()
                             ->markAsRequired()
                             ->maxLength(100)
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                if ($operation !== 'create') {return;}
+                                if ($operation !== 'create' || !mb_strstr( $state, ' ', true )) {return;}
                                 $set('socialName', mb_strstr( $state, ' ', true ));
                             })
                             ->columnSpan(2),
@@ -80,32 +83,63 @@ class CustomerResource extends Resource
                             ->id('type_document_id')
                             ->label(__('customer.field.typeDocument'))
                             ->options(TypeDocument::all()->pluck('name', 'id'))
-                            ->default(1)
                             ->required()
                             ->markAsRequired()
-                            ->columnSpan(1)
-                            ->live(),
-                        TextInput::make('documentNumber')
+                            ->columnSpan(1),
+                        Document::make('documentNumber')
                             ->label(__('customer.field.documentNumber'))
-                            ->required()
+                            ->dynamic()
+                            ->validation(true)
                             ->markAsRequired()
                             ->helperText(__('customer.helperText.documentNumber'))
-                            ->maxLength(50)
-                            ->mask(function (Get $get): string {
-                                $valor = $get('type_document_id');
-                                switch ($valor) {
-                                    case 1:
-                                        return '999.999.999-99';
-                                    case 2:
-                                        return '99.999.999/9999-99';
-                                    default:
-                                        return '';
+                            ->columnSpan(1)
+                            ->rules([
+                                'required',
+                                fn(Get $get, string $operation): Closure => function(string $attribute, $value, callable $fail) use ($get, $operation) {
+                                    if($operation === "create") {
+                                        $existsDB = Customer::where('documentNumber', preg_replace("/[^0-9]/", "", $value))->count();
+
+                                        if ($existsDB > 0) {
+                                            $fail(__('customer.validation.uniqueDocumentNumber'));
+                                        }
+                                    }
+                                    else {
+                                        $existsDB = Customer::where('documentNumber', preg_replace("/[^0-9]/", "", $value))
+                                            ->where('id', '<>', $get('id'))
+                                            ->count();
+                                        if ($existsDB > 0) {
+                                            $fail(__('customer.validation.uniqueDocumentNumber'));
+                                        }
+                                    }
+                                },
+                            ])
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function(Page $livewire, $state){
+                                if(!is_null($state)) {
+                                    $livewire->validateOnly('data.documentNumber');
                                 }
                             })
-                            ->columnSpan(1),
+                        ,
                         DatePicker::make('birthDate')
                             ->label(__('customer.field.birthDate'))
                             ->format('d/m/Y')
+                            ->columnSpan(1)
+                            ->live(true)
+                            ->afterStateUpdated(function ($state, Forms\Set $set){
+                                $date = new DateTime($state );
+                                $interval = $date->diff( new DateTime( date('Y-m-d') ) );
+                                $set('customer_age', $interval->format( '%Y anos' ));
+                            }),
+                        TextInput::make('customer_age')
+                            ->label(__('customer.field.customer_age'))
+                            ->disabled()
+                            ->default('0')
+                            ->columnSpan(1),
+                        Select::make('type_gender_id')
+                            ->label(__('customer.field.typeGender'))
+                            ->options(TypeGender::all()->pluck('name', 'id'))
+                            ->required()
+                            ->markAsRequired()
                             ->columnSpan(1),
                         Select::make('status_id')
                             ->label(__('customer.field.status'))
@@ -114,29 +148,11 @@ class CustomerResource extends Resource
                             ->required()
                             ->markAsRequired()
                             ->columnSpan(1),
-                        DateTimePicker::make('created_at')
-                            ->label(__('customer.field.createdAt'))
-                            ->disabled()
-                            ->visibleOn(['edit', 'view'])
-                            ->columnSpan(1),
-                            //->date('d/m/Y H:i:s'),
-                        DateTimePicker::make('updated_at')
-                            ->label(__('customer.field.updatedAt'))
-                            ->disabled()
-                            ->visibleOn(['edit', 'view'])
-                            ->columnSpan(1),
-                            //->date('d/m/Y H:i:s'),
                         TextInput::make('origin')
                             ->label(__('customer.field.origin'))
                             ->required()
                             ->disabled()
                             ->default('WEB')
-                            ->columnSpan(1),
-                        Select::make('type_gender_id')
-                            ->label(__('customer.field.typeGender'))
-                            ->options(TypeGender::all()->pluck('name', 'id'))
-                            ->required()
-                            ->markAsRequired()
                             ->columnSpan(1),
                     ]),
                 Section::make(__('customer.section.title.addressData'))
@@ -147,19 +163,10 @@ class CustomerResource extends Resource
                     ->schema([
                         Cep::make('postalCode')
                             ->label(__('customer.field.postalCode'))
-                            ->required()
-                            ->markAsRequired()
                             ->columnSpan(1)
-                            //->live(onBlur: true)
                             ->viaCep(
-                                mode: 'suffix', // Determines whether the action should be appended to (suffix) or prepended to (prefix) the cep field, or not included at all (none).
-                                errorMessage: 'CEP inválido.', // Error message to display if the CEP is invalid.
-
-                                /**
-                                 * Other form fields that can be filled by ViaCep.
-                                 * The key is the name of the Filament input, and the value is the ViaCep attribute that corresponds to it.
-                                 * More information: https://viacep.com.br/
-                                 */
+                                mode: 'suffix',
+                                errorMessage: 'CEP inválido.',
                                 setFields: [
                                     'address' => 'logradouro',
                                     //'addressNumber' => 'numero',
@@ -167,7 +174,7 @@ class CustomerResource extends Resource
                                     'neighborhood' => 'bairro',
                                     'city' => 'localidade',
                                     'state' => 'uf'
-                                ]
+                                ],
                             ),
                         TextInput::make('address')
                             ->label(__('customer.field.address'))
@@ -206,9 +213,23 @@ class CustomerResource extends Resource
                     ->description(__('customer.section.description.extraData'))
                     ->icon('healthicons-f-i-documents-accepted')
                     ->collapsed()
+                    ->columns(2)
                     ->schema([
                         RichEditor::make('observation')
-                            ->label(__('customer.field.observation')),
+                            ->label(__('customer.field.observation'))
+                            ->columnSpanFull(),
+                        DateTimePicker::make('created_at')
+                            ->label(__('customer.field.createdAt'))
+                            ->disabled()
+                            ->visibleOn(['edit', 'view'])
+                            ->columnSpan(1),
+                            //->date('d/m/Y H:i:s'),
+                        DateTimePicker::make('updated_at')
+                            ->label(__('customer.field.updatedAt'))
+                            ->disabled()
+                            ->visibleOn(['edit', 'view'])
+                            ->columnSpan(1),
+                            //->date('d/m/Y H:i:s'),
                     ])
             ]);
     }

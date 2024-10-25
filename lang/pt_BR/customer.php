@@ -81,8 +81,18 @@ return [
     'field.city' => 'Cidade',
     'field.state' => 'Estado (UF)',
     'field.observation' => 'Observação',
+    'field.customer_age' => 'Idade',
 
     'helperText.documentNumber' => 'Digite somente números.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Form Validations
+    |--------------------------------------------------------------------------
+    */
+
+    'validation.uniqueDocumentNumber' => 'O número de documento já está em uso.',
+    'validation.required' => 'Validação obrigatória',
 
     /*
     |--------------------------------------------------------------------------
