@@ -3,20 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RegisterCustomerResource\Pages;
-use App\Filament\Resources\RegisterCustomerResource\RelationManagers;
 use App\Filament\Resources\RegisterCustomerResource\Widgets\RegisterCustomerOverview;
-use App\Models\Customer;
 use App\Models\RegisterCustomer;
 use App\Models\Service;
+use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -24,15 +24,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Carbon\Carbon;
-use Filament\Forms\Components\Actions\Action as ActionsAction;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Set;
-use Filament\Support\Enums\VerticalAlignment;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 
 

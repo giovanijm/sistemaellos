@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\CustomerResource\Pages;
 
 use App\Filament\Resources\CustomerResource;
-use Filament\Actions;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
-use Carbon\Carbon;
 
 class CreateCustomer extends CreateRecord
 {

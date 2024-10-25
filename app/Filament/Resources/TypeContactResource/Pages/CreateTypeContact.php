@@ -3,9 +3,7 @@
 namespace App\Filament\Resources\TypeContactResource\Pages;
 
 use App\Filament\Resources\TypeContactResource;
-use Filament\Actions;
 use Filament\Actions\Action;
-
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateTypeContact extends CreateRecord

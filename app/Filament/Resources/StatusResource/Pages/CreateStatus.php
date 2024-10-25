@@ -3,9 +3,7 @@
 namespace App\Filament\Resources\StatusResource\Pages;
 
 use App\Filament\Resources\StatusResource;
-use Filament\Actions;
 use Filament\Actions\Action;
-
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateStatus extends CreateRecord

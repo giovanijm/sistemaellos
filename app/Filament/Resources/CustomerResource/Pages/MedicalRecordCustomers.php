@@ -4,11 +4,8 @@ namespace App\Filament\Resources\CustomerResource\Pages;
 
 use App\Filament\Resources\CustomerResource;
 use Filament\Actions;
-use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
-use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Model;
 
 class MedicalRecordCustomers extends Page
 {

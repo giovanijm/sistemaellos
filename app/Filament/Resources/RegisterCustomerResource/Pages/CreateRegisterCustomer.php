@@ -3,11 +3,9 @@
 namespace App\Filament\Resources\RegisterCustomerResource\Pages;
 
 use App\Filament\Resources\RegisterCustomerResource;
-use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
 use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateRegisterCustomer extends CreateRecord
 {

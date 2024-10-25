@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ServiceResource\Pages;
-use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Filament\Resources\ServiceResource\Widgets\ServicesStatsOverview;
 use App\Models\Service;
 use App\Models\Unit;
@@ -16,15 +15,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\ActionSize;
-use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Leandrocfe\FilamentPtbrFormFields\Money;
 

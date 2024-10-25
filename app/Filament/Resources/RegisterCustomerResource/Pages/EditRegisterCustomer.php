@@ -3,13 +3,10 @@
 namespace App\Filament\Resources\RegisterCustomerResource\Pages;
 
 use App\Filament\Resources\RegisterCustomerResource;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Carbon\Carbon;
-use Filament\Actions\Action as ActionsAction;
-use Filament\Actions\StaticAction;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditRegisterCustomer extends EditRecord
 {
